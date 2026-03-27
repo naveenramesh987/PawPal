@@ -40,10 +40,18 @@ I made two small changes after reviewing the skeleton:
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
 
+The scheduler considers two constraints: time and priority. The owner's `available_minutes` acts as a hard cap — tasks that don't fit are skipped entirely. Within that budget, tasks are sorted so that `is_required=True` tasks always go first, followed by high, medium, and low priority tasks in that order.
+
+I decided that time matters most because it's the one thing that can't be changed. Required tasks come next because they represent things like medication that have real consequences if skipped. Priority handles everything else, letting the scheduler favor important-but-optional tasks over nice-to-haves when time is tight.
+
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+
+The conflict detector only flags tasks that share the exact same `start_time` string (e.g., both at `"08:00"`). It does not check whether tasks *overlap* — for example, a 30-minute walk starting at `07:00` and a 10-minute feeding starting at `07:15` would not be flagged, even though they run at the same time.
+
+This is a reasonable tradeoff for now because most pet care tasks happen one at a time and owners naturally assign distinct start times. Overlap detection would require comparing start times as integers and checking whether `start + duration > next_start`, which adds complexity without much benefit at this stage.
 
 ---
 

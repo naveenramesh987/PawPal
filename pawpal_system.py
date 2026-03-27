@@ -1,5 +1,6 @@
+from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 
 @dataclass
@@ -11,6 +12,8 @@ class Task:
     frequency: str = "daily"       # "daily", "weekly", "as needed"
     is_required: bool = False
     completed: bool = False
+    start_time: str = ""           # "HH:MM" format, e.g. "08:30"
+    due_date: date = field(default_factory=date.today)
 
     def is_high_priority(self) -> bool:
         """Return True if the task's priority is high."""
@@ -23,6 +26,14 @@ class Task:
     def mark_incomplete(self) -> None:
         """Mark the task as not completed."""
         self.completed = False
+
+    def next_due_date(self) -> date | None:
+        """Return the next due date based on frequency, or None if non-recurring."""
+        if self.frequency == "daily":
+            return self.due_date + timedelta(days=1)
+        if self.frequency == "weekly":
+            return self.due_date + timedelta(weeks=1)
+        return None  # "as needed" tasks do not recur automatically
 
 
 @dataclass
@@ -153,3 +164,58 @@ class Scheduler:
     def _fits_in_time(self, task: Task, remaining_minutes: int) -> bool:
         """Return True if the task's duration fits within the remaining time."""
         return task.duration_minutes <= remaining_minutes
+
+    def sort_by_time(self, tasks: list = None) -> list:
+        """Sort tasks by start_time (HH:MM); tasks with no time set go last."""
+        source = tasks if tasks is not None else self.get_all_tasks()
+        return sorted(
+            source,
+            key=lambda t: t.start_time if t.start_time else "99:99"
+        )
+
+    def filter_by_status(self, completed: bool) -> list:
+        """Return tasks matching the given completion status across all pets."""
+        return [t for t in self.get_all_tasks() if t.completed == completed]
+
+    def filter_by_pet(self, pet_name: str) -> list:
+        """Return all tasks belonging to the pet with the given name."""
+        for pet in self.owner.pets:
+            if pet.name.lower() == pet_name.lower():
+                return pet.get_tasks()
+        return []
+
+    def detect_conflicts(self) -> list[str]:
+        """Return a list of warning strings for any tasks that share the same start time."""
+        time_slots: defaultdict[str, list[str]] = defaultdict(list)
+        for pet in self.owner.pets:
+            for task in pet.get_tasks():
+                if not task.start_time:
+                    continue
+                time_slots[task.start_time].append(f"{task.title} ({pet.name})")
+
+        warnings = []
+        for time, names in time_slots.items():
+            if len(names) > 1:
+                warnings.append(
+                    f"WARNING: Conflict at {time} — {' and '.join(names)} are scheduled at the same time."
+                )
+        return warnings
+
+    def complete_task(self, task: Task, pet: Pet) -> Task | None:
+        """Mark a task complete and add the next occurrence to the pet if it recurs."""
+        task.mark_complete()
+        next_date = task.next_due_date()
+        if next_date is None:
+            return None
+        next_task = Task(
+            title=task.title,
+            duration_minutes=task.duration_minutes,
+            priority=task.priority,
+            category=task.category,
+            frequency=task.frequency,
+            is_required=task.is_required,
+            start_time=task.start_time,
+            due_date=next_date,
+        )
+        pet.add_task(next_task)
+        return next_task

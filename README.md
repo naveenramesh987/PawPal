@@ -22,6 +22,16 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Smarter Scheduling
+
+Beyond the basic daily plan, the scheduler includes four additional features:
+
+- Sort by time — tasks can be ordered by their `start_time` field (HH:MM), with unscheduled tasks pushed to the end.
+- Filter by status — retrieve only pending or only completed tasks across all pets.
+- Filter by pet — retrieve all tasks belonging to a specific pet by name.
+- Recurring tasks — when a daily or weekly task is marked complete, a new instance is automatically created for the next occurrence using `timedelta`.
+- Conflict detection — warns when two tasks (across any pet) share the exact same start time, helping the owner catch scheduling collisions before they happen.
+
 ## Getting started
 
 ### Setup
