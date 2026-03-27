@@ -32,6 +32,24 @@ Beyond the basic daily plan, the scheduler includes four additional features:
 - Recurring tasks — when a daily or weekly task is marked complete, a new instance is automatically created for the next occurrence using `timedelta`.
 - Conflict detection — warns when two tasks (across any pet) share the exact same start time, helping the owner catch scheduling collisions before they happen.
 
+## Testing PawPal+
+
+Run the full test suite with:
+
+```bash
+python -m pytest
+```
+
+The suite contains 5 tests covering:
+
+- Task completion — verifies that `mark_complete()` flips `completed` from `False` to `True`
+- Task addition — verifies that `add_task()` increases the pet's task count
+- Sorting correctness — verifies that `sort_by_time()` returns tasks in chronological order (07:00 → 08:00 → 15:00)
+- Recurrence logic — verifies that completing a daily task creates a new task due the following day
+- Conflict detection — verifies that `detect_conflicts()` flags two tasks sharing the same start time
+
+Confidence level: ★★★★☆
+
 ## Getting started
 
 ### Setup
