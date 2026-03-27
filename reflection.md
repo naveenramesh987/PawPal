@@ -4,23 +4,32 @@
 
 **a. Initial design**
 
+1. Add a pet profile
+
+2. Add and edit care tasks
+
+3. Generate and view today's plan
+
 - Briefly describe your initial UML design.
+
+
 - What classes did you include, and what responsibilities did you assign to each?
 
-3 core actions the user needs to be able to do:
+I designed five classes:
 
-1. **Add a pet profile.** The user enters their name, their pet's name and details, and how much time they have available in a day. This gives the scheduler the basic info it needs before it can do anything useful.
-
-2. **Add and edit care tasks.** The user creates a list of things their pet needs — like a walk, feeding, medication, or grooming. Each task has a duration and a priority so the scheduler knows what to fit in and what matters most.
-
-3. **Generate and view today's plan.** The user asks the app to build a daily schedule. The app picks and orders tasks based on available time and priorities, shows the final plan, and explains why it made the choices it did.
-
-
+- **`Task`** — represents one care activity, like a walk or feeding. Stores the name, how long it takes, and its priority.
+- **`Pet`** — stores the pet's basic info and holds the list of tasks for that pet.
+- **`Owner`** — stores the owner's name and how many minutes they have available each day.
+- **`Scheduler`** — takes the owner and pet, picks which tasks fit in the available time, and returns a plan.
+- **`DailyPlan`** — the result of scheduling. Keeps track of which tasks made the cut, which were skipped, and why.
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+I made two small changes after reviewing the skeleton:
+
+1. **Removed `__repr__` from `Task`.** I had added it as a stub, but since `Task` is a dataclass, Python already generates that method automatically. Keeping the stub would have broken it, so I removed it.
+
+2. **Added `owner` to `DailyPlan`.** I realized the `explain()` method needed to know the owner's name and time budget to write a useful summary. Without it, `DailyPlan` had no way to access that information.
 
 ---
 
