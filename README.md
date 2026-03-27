@@ -22,6 +22,21 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Demo
+
+<a href="app.png" target="_blank"><img src='app.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+## Features
+
+- Owner and pet profiles — set the owner's name, daily time budget, pet name, and species. All data persists across interactions using Streamlit session state.
+- Task management — add care tasks with a title, duration, priority (low / medium / high), and optional start time.
+- Priority scheduling — the scheduler fits tasks into the owner's time budget, placing required tasks first and then ordering by priority (high → medium → low). Tasks that don't fit are listed as skipped with a reason.
+- Sort by time — all tasks are displayed in chronological order by start time, with unscheduled tasks shown at the end.
+- Conflict warnings — if two tasks share the same start time, the app shows an inline warning identifying which tasks clash and when.
+- Daily recurrence — marking a daily or weekly task complete automatically creates the next occurrence due one day (or one week) later.
+- Pending / completed view — tasks are split into two live columns so the owner can see what still needs doing and what is already done.
+- Schedule explanation — the generated plan prints a plain-language summary naming each scheduled task, its duration, and why it was included (required or priority level).
+
 ## Smarter Scheduling
 
 Beyond the basic daily plan, the scheduler includes four additional features:
